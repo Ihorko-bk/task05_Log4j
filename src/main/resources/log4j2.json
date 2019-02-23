@@ -1,0 +1,105 @@
+{
+  "Configuration": {
+    "Appenders": {
+      "Appender": [
+        {
+          "type": "Console",
+          "name": "Console1",
+          "PatternLayout": {
+            "pattern": "%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n"
+          },
+          "target": "SYSTEM_OUT"
+        },
+        {
+          "type": "Console",
+          "name": "Console2",
+          "PatternLayout": {
+            "pattern": "%highlight{%-5level}{FATAL=bg_red} %style{%date{yyyy-MM-dd HH:mm:ss.SSS}}{blue} %class{1}:%L - %highlight{%msg} %xEx{short}%n"
+          },
+          "target": "SYSTEM_OUT",
+          "LevelRangeFilter": {
+            "minLevel": "warn",
+            "maxLevel": "info",
+            "onMatch": "ACCEPT",
+            "onMismatch": "DENY"
+          }
+        },
+        {
+          "type": "SMTP",
+          "name": "GMailAppender",
+          "subject": "Error Log",
+          "to": "dev.ihorko.bk@gmail.com",
+          "from": "dev.ihorko.bk@gmail.com",
+
+          "smtpHost": "smtp.gmail.com",
+          "smtpPort": "465",
+          "smtpProtocol": "smtps",
+          "smtpUsername": "dev.ihorko.bk@gmail.com",
+          "smtpPassword": "DevelopPassW1",
+          "ThresholdFilter": {
+            "level": "error"
+          },
+          "bufferSize": "5"
+        },
+        {
+          "type": "RollingFile",
+          "name": "FileLog",
+          "fileName": "log/LogFile.log",
+          "append": "true",
+          "filePattern": "log/archive/LogFile-%d{yy-MM-dd}.log",
+          "PatternLayout": {
+            "Pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %class{1}:%L - %msg%xEx{short}%n"
+          },
+          "Policies": {
+            "TimeBasedTriggeringPolicy": {
+              "interval": "1",
+              "modulate": "true"
+            }
+          }
+        },
+        {
+          "type":"SMS",
+          "name": "SMSsender",
+          "PatternLayout": {
+            "Pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss} - %msg %xEx{short}"
+          }
+        },
+        {
+          "type": "Async",
+          "name": "AsyncSMS",
+          "AppenderRef": {
+            "ref": "SMSsender"
+          },
+          "LevelRangeFilter": {
+            "minLevel": "fatal",
+            "maxLevel": "fatal",
+            "onMatch": "ACCEPT",
+            "onMismatch": "DENY"
+          }
+        }
+      ]
+    },
+    "Loggers": {
+      "Root": {
+        "AppenderRef": [
+          {
+            "ref": "Console1"
+          },
+          {
+            "ref": "GMailAppender"
+          },
+          {
+            "ref": "FileLog"
+          },
+          {
+            "ref": "AsyncSMS"
+          },
+          {
+            "ref": "Console2"
+          }
+        ],
+        "level": "trace"
+      }
+    }
+  }
+}
